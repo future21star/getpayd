@@ -1,6 +1,8 @@
 import { NgModule }                         from '@angular/core';
 import { Routes, RouterModule }             from '@angular/router';
 
+import { ManageCompanyComponent}             from './company/manage_company.component';
+import { NewCompanyComponent }               from './company/new/new_company.component';
 import { ManageUserComponent }               from './user/manage_user.component';
 import { NewUserComponent }         from './user/new/new_user.component';
 import { ManageContentComponent }   from './content/manage_content.component';
@@ -13,6 +15,8 @@ import { DashboardComponent }         from './dashboard/dashboard.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+    { path: 'manage_company',            component: ManageCompanyComponent },
+    { path: 'new_company',                component: NewCompanyComponent },
     { path: 'manage_user',            component: ManageUserComponent },
     { path: 'new_user',                component: NewUserComponent },
     { path: 'manage_content',         component: ManageContentComponent },

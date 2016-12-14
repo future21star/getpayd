@@ -87,6 +87,7 @@ export class QuizActivityComponent implements OnInit{
       points_awarded: this.points_awarded,
       date: current_date
     });  
+    this.user.available_tokens += this.correct_answers_number * this.content.reward;
     this.adminService.editUser(this.user)
       .subscribe(
           data => {

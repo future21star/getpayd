@@ -6,5 +6,10 @@ import { Component } from '@angular/core'
 })
 
 export class DashboardComponent {
-  constructor() {}
+  private account_type = 0;
+  constructor() {
+    if (JSON.parse(localStorage.getItem('currentUser')).company_name != null) {
+      this.account_type = 1;
+    }
+  }
 }

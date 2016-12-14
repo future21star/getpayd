@@ -18,6 +18,7 @@ export class UserService {
 
   //Get available contents
   getAvailableContents(department_v,department_id, department_name) {
-    return this.http.get(`/get_available_contents/${department_v}/${department_id}/${department_name}`).map(res => res.json());
+    let currentUser = JSON.parse(localStorage.getItem('currentUser'))
+    return this.http.get(`/get_available_contents/${currentUser.company._id}/${department_v}/${department_id}/${department_name}`).map(res => res.json());
   }
 }

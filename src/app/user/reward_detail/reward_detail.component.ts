@@ -49,7 +49,6 @@ export class RewardDetailComponent{
     this.adminService.getUser(JSON.parse(localStorage.getItem('currentUser'))._id).subscribe(
       data => {
         this.user = data;
-        this.user.available_tokens = 500;
         this.rewards = data.rewards;
         for (let index in this.rewards) {
           let reward_item = this.rewards[index];
@@ -109,6 +108,16 @@ export class RewardDetailComponent{
         }
         this.user.rewards = this.rewards;
       }
+      this.adminService.sendEmailRegardingReward(this.user, this.reward, this.number)
+        .subscribe(
+          data => {
+
+          },
+          error => {
+            console.log(error);
+          },
+          () => { }
+      );
       this.adminService.editUser(this.user)
         .subscribe(
             data => {

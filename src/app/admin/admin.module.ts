@@ -8,7 +8,9 @@ import { FileUploadModule } from 'ng2-file-upload'
 import { AdminRoutingModule } from './admin.routing';
 
 import { AuthenticationService, UserService } from '../_services/index';
-import { DashboardComponent } from './dashboard/dashboard.component'
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { ManageCompanyComponent} from './company/manage_company.component';
+import { NewCompanyComponent } from './company/new/new_company.component';
 import { ManageUserComponent }   from './user/manage_user.component';
 import { NewUserComponent } from './user/new/new_user.component';
 import { ManageContentComponent }   from './content/manage_content.component';
@@ -33,6 +35,8 @@ import { SearchPipe } from '../_pipes/search.pipe';
   ],
   declarations: [
     DashboardComponent,
+    ManageCompanyComponent,
+    NewCompanyComponent,
     ManageUserComponent,
     NewUserComponent,
     ManageContentComponent,

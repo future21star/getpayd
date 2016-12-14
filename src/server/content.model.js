@@ -9,6 +9,11 @@
 //  answers: []
 //  correct_answer:
 //} 
+// company {
+//   _id:
+//   company_name:
+//   email:
+// }
 //]
 
 var mongoose = require('mongoose');
@@ -20,6 +25,7 @@ var contentSchema = mongoose.Schema({
     reward: Number,
     date_end: Date,
     quizzes: Array,
+    company: Object
 });
 
 var Content = mongoose.model('Content', contentSchema);

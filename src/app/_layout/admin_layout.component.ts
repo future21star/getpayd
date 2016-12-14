@@ -7,8 +7,14 @@ import { Component } from '@angular/core'
 })
 export class AdminLayoutComponent {
   private user_name;
+  private account_type;
 
   ngOnInit() {
     this.user_name = JSON.parse(localStorage.getItem('currentUser')).first_name;
+    this.account_type = 0;
+    if (JSON.parse(localStorage.getItem('currentUser')).company_name != null) {
+      this.user_name = JSON.parse(localStorage.getItem('currentUser')).company_name
+      this.account_type = 1;
+    }
   }
 }

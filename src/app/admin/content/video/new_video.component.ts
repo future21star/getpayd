@@ -29,8 +29,7 @@ export class NewVideoComponent implements OnInit{
   }
 
   private isLoading: boolean = true;
-  private available_tos: Department[] = [];
-  
+  private available_tos: Department[] = [];  
   private video_file;
   private addVideoForm: FormGroup;
   private content = new FormControl("", Validators.required);
@@ -88,6 +87,9 @@ export class NewVideoComponent implements OnInit{
   addVideo() {
     this.isUploading = true;
     let file = this.video_to_upload
+    AWS.config.region = "us-east-1";
+    AWS.config.accessKeyId = "AKIAIMSEK6YLJZGNTIJQ";
+    AWS.config.secretAccessKey = "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";
     let bucket = new AWS.S3({params: {Bucket:"ledgerofthings"}});
     let params = {Key: file.name, Body: file, ACL: 'public-read'};
     bucket.upload(params, (error, res) => {
@@ -97,6 +99,7 @@ export class NewVideoComponent implements OnInit{
       content = form._value;
       content.type = "video";
       content.content = res.Location;
+      content.company = JSON.parse(localStorage.getItem('currentUser'));
       this.adminService.addContent(content)
       .subscribe(
           data => {

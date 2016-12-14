@@ -8,6 +8,7 @@ import { AboutComponent }            from './about/about.component';
 import { LoginComponent }            from './login/login.component'; 
 import { ForgotPasswordComponent }            from './forgot_password/forgot_password.component'; 
 import { RegisterComponent }         from './register/register.component';
+import { RegisterCompanyComponent } from './admin/company/register_company/register_company.component';
 import { AdminLayoutComponent }            from './_layout/admin_layout.component'; 
 import { UserLayoutComponent }            from './_layout/user_layout.component'; 
 
@@ -44,6 +45,7 @@ export const routes: Routes = [
     { path: 'login', component: LoginComponent },
     { path: 'password_reset', component: ForgotPasswordComponent },
     { path: 'register/:id', component: RegisterComponent },
+    { path: 'register_company/:id', component: RegisterCompanyComponent },
     { path: '**', redirectTo: '' }
 ];
 

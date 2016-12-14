@@ -27,6 +27,13 @@
 //     points_awarded
 //     date    
 // }
+// company
+// {
+//     _id:
+//     company_name:
+//     email:
+//     password:
+// }
 // ]
 
 var mongoose = require('mongoose');
@@ -42,7 +49,8 @@ var userSchema = mongoose.Schema({
     tokens: Number,
     available_tokens: Number,
     rewards: Array,
-    activities: Array
+    activities: Array,
+    company: Object
 });
 
 var User = mongoose.model('User', userSchema);

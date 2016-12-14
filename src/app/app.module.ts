@@ -20,6 +20,7 @@ import { HomeComponent } from './home/home.component';
 import { AboutComponent } from './about/about.component';
 import { LoginComponent } from './login/login.component';
 import { ForgotPasswordComponent }            from './forgot_password/forgot_password.component'; 
+import { RegisterCompanyComponent } from './admin/company/register_company/register_company.component';
 import { RegisterComponent } from './register/register.component';
 
 import { AdminLayoutComponent }    from './_layout/admin_layout.component'; 
@@ -44,6 +45,7 @@ import { ToastComponent } from './shared/toast/toast.component';
     LoginComponent,
     ForgotPasswordComponent,
     RegisterComponent,
+    RegisterCompanyComponent,
         
     HomeComponent,
     AboutComponent,

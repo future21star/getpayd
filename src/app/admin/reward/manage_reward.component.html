@@ -22,6 +22,7 @@
             <thead class="thead-default">
                 <tr>
                     <th>Name</th>
+                    <th>Company</th>
                     <th>Cost</th>
                     <th>Details</th>
                     <th>Available To</th>
@@ -37,6 +38,7 @@
             <tbody>
                 <tr *ngFor="let reward of rewards">
                     <td>{{reward.name}}</td>
+                    <td>{{reward.company.company_name}}</td>
                     <td>{{reward.cost}}</td>
                     <td>{{reward.details}}</td>
                     <td>

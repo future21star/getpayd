@@ -25,7 +25,7 @@ var User = require('./user.model.js');
 var Content = require('./content.model.js');
 var Reward = require('./reward.model.js');
 var Department = require('./department.model.js');
-
+var Company = require('./company.model.js');
 
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
@@ -36,16 +36,35 @@ db.once('open', function() {
       // find if any user matches login credentials
       User.findOne({email:req.body.email, password:req.body.password}, function(err, docs){
         if (err) return console.log(err);
-        res.status(200).json(docs);
+        if (docs === null) {
+          Company.findOne({email:req.body.email, password:req.body.password}, function(err, docs){
+            if (err) return console.log(err);
+            res.status(200).json(docs);
+          });
+        }
+        else {
+          return res.status(200).json(docs);
+        }
       });
     });
 
   //User
   // select all
-  app.get('/users', function(req, res) {
-    User.find({}, function(err, docs) {
+  app.get('/users/:id', function(req, res) {
+    User.find({_id: req.params.id}, function(err, docs) {
       if(err) return console.error(err);
-      res.json(docs);
+      if (docs.length != 0) {
+        User.find({}, function(err, docs){
+          if (err) return console.error(err);
+          return res.status(200).json(docs);
+        });
+      }
+      else {
+        User.find({'company._id': req.params.id}, function(err, docs) {
+          if (err) return console.error(err);
+          return res.status(200).json(docs);          
+        });
+      }
     });
   });
   //get user
@@ -82,12 +101,62 @@ db.once('open', function() {
       res.sendStatus(200);
     });
   });
-  //content
-  //get all content
-  app.get('/contents', function(req, res) {
-    Content.find({}, function(err, docs) {
+  //Company
+  // select all
+  app.get('/companies', function(req, res) {
+    Company.find({}, function(err, docs) {
       if(err) return console.error(err);
       res.json(docs);
+    });
+  });
+  //get company
+  app.get('/specific_company/:id', function(req, res) {
+    Company.findById(req.params.id, function(err, docs) {
+      if(err) return console.error(err);
+      res.json(docs);
+    });
+  });
+  // create company
+  app.post('/company', function(req, res) {
+    var obj = new Company(req.body);
+    obj.save(function(err, obj) {
+        if(err) return console.error(err);
+        res.status(200).json(obj);
+    });
+  });
+  // update by id
+  app.put('/company/:id', function(req, res) {
+    _id = req.params.id;
+    delete req.body._id;
+    Company.findOneAndUpdate({_id: _id}, req.body, function(err) {
+      if(err) return console.error(err);
+      res.sendStatus(200);
+    })
+  });
+  // delete by id
+  app.delete('/company/:id', function(req, res) {
+    Company.findOneAndRemove({_id: req.params.id}, function(err) {
+      if(err) return console.error(err);
+      res.sendStatus(200);
+    });
+  });
+  //content
+  //get all content
+  app.get('/contents/:id', function(req, res) {
+    User.find({_id: req.params.id}, function(err, docs) {
+      if(err) return console.error(err);
+      if (docs.length != 0) {
+        Content.find({}, function(err, docs) {
+          if(err) return console.error(err);
+          res.json(docs);
+        });
+      }
+      else {
+        Content.find({'company._id': req.params.id}, function(err, docs) {
+          if(err) return console.error(err);
+          res.json(docs);
+        });
+      }
     });
   });
   //get content
@@ -116,8 +185,8 @@ db.once('open', function() {
     })
   });
   //get available contents
-  app.get('/get_available_contents/:department_v/:department_id/:department_name', function(req, res) {
-    Content.find({available_to: {__v: Number(req.params.department_v), _id : req.params.department_id, department : req.params.department_name }}, function(err, docs) {
+  app.get('/get_available_contents/:company_id/:department_v/:department_id/:department_name', function(req, res) {
+    Content.find({'company._id':req.params.company_id,available_to: {__v: Number(req.params.department_v), _id : req.params.department_id, department : req.params.department_name }}, function(err, docs) {
       if(err) return console.error(err);
       res.json(docs);
     });
@@ -131,15 +200,27 @@ db.once('open', function() {
   });
   //reward
   //get all reward
-  app.get('/rewards', function(req, res) {
-    Reward.find({}, function(err, docs) {
+  app.get('/rewards/:id', function(req, res) {
+    User.find({_id: req.params.id}, function(err, docs) {
       if(err) return console.error(err);
-      res.json(docs);
+      if (docs.length != 0) {
+        Reward.find({}, function(err, docs) {
+          if(err) return console.error(err);
+          res.json(docs);
+        });
+      }
+      else {
+        Reward.find({'company._id': req.params.id}, function(err, docs) {
+          if(err) return console.error(err);
+          res.json(docs);
+        });
+      }
     });
   });
   //get available rewards
-  app.get('/get_available_rewards/:department_v/:department_id/:department_name', function(req, res) {
-    Reward.find({available_to: {__v: Number(req.params.department_v), _id : req.params.department_id, department : req.params.department_name }}, function(err, docs) {
+  app.get('/get_available_rewards/:company_id/:department_v/:department_id/:department_name', function(req, res) {
+    console.log(req.params.company_id);
+    Reward.find({'company._id': req.params.company_id, available_to: {__v: Number(req.params.department_v), _id : req.params.department_id, department : req.params.department_name }}, function(err, docs) {
       if(err) return console.error(err);
       res.json(docs);
     });
@@ -249,7 +330,7 @@ db.once('open', function() {
     });
     // // send the message and get a callback with an error or details of the message that was sent
     server.send({
-      text:    "We heard that you lost your GetPayd password. Sorry about that! But don’t worry! You can use the following link to reset your password: https://getpayd-demo-warzi117.c9users.io:8080/register/" + req.body["_id"], 
+      text:    "We heard that you lost your GetPayd password. Sorry about that! But don’t worry! You can use the following link to reset your password: http://localhost:3000/register/" + req.body["_id"], 
       from:    "ptulr2016@gmail.com", 
       to:      req.body["email"],
       subject: "testing emailjs"
@@ -271,10 +352,58 @@ db.once('open', function() {
     });
     // send the message and get a callback with an error or details of the message that was sent
     server.send({
-      text:    "We would like to invite you for our website. Please confirm at https://getpayd-demo-warzi117.c9users.io:8080/register/" + JSON.parse(req.body["_body"])._id + " to our website", 
+      text:    "We would like to invite you for our website. Please confirm at http://localhost:3000/register/" + JSON.parse(req.body["_body"])._id + " to our website", 
       from:    "ptulr2016@gmail.com", 
       to:      JSON.parse(req.body["_body"])["email"],
-      subject: "testing emailjs"
+      subject: "testing email"
+    }, function(err, message) {  
+      if(err)
+        console.log(err);
+      else
+        res.json({success: true, msg: 'sent'});
+    });
+  })
+
+  //send invitation email to company
+  app.post('/send_invitation_to_company', function(req, res){
+    var email   = require("../../node_modules/emailjs/email");
+    var server  = email.server.connect({
+      user:    "ptulr2016@gmail.com",
+      password:"dkzcviwerkzcv123", 
+      host:    "smtp.gmail.com", 
+      ssl:     true
+    });
+    // send the message and get a callback with an error or details of the message that was sent
+    server.send({
+      text:    "We would like to invite you as manger for your company group. Please confirm at http://localhost:3000/register_company/" + JSON.parse(req.body["_body"])._id + " to our website", 
+      from:    "ptulr2016@gmail.com", 
+      to:      JSON.parse(req.body["_body"])["email"],
+      subject: "testing email"
+    }, function(err, message) {  
+      if(err)
+        console.log(err);
+      else
+        res.json({success: true, msg: 'sent'});
+    });
+  })
+
+  //send invitation email to company
+  app.post('/send_email_regarding_reward', function(req, res){
+    var email   = require("../../node_modules/emailjs/email");
+    var server  = email.server.connect({
+      user:    "ptulr2016@gmail.com",
+      password:"dkzcviwerkzcv123", 
+      host:    "smtp.gmail.com", 
+      ssl:     true
+    });
+    var user = req.body.user;
+    var reward = req.body.reward;
+    var number = req.body.number;
+    server.send({
+      text:    user.first_name + " " + user.last_name + " bought " + number + " " + reward.name + "(s)", 
+      from:    "ptulr2016@gmail.com", 
+      to:      user.company.email,
+      subject: "testing email"
     }, function(err, message) {  
       if(err)
         console.log(err);

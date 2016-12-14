@@ -14,6 +14,7 @@ export class UserDashboardComponent implements OnInit{
     private isLoading = true;
     private available_ids: String[] = [];
     private user;
+    private available_tokens;
 
     constructor(
       private userService: UserService,
@@ -28,6 +29,7 @@ export class UserDashboardComponent implements OnInit{
       this.adminService.getUser(id).subscribe(
         data => {
           this.user = data;
+          this.available_tokens = this.user.available_tokens
           this.getAvailableContents();
         },
         error => console.log(error),

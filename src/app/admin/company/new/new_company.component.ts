@@ -4,14 +4,14 @@ import { Router } from '@angular/router';
 import { AlertService, AdminService } from '../../../_services/index';
 
 @Component({
-    templateUrl: 'new_user.component.html',
-    styleUrls: ['new_user.component.scss']
+    templateUrl: 'new_company.component.html',
+    styleUrls: ['new_company.component.scss']
 })
 
-export class NewUserComponent implements OnInit{
+export class NewCompanyComponent implements OnInit{
     private model: any = {};
     private loading = false;
-    private user_emails: String[] = [];
+    private company_emails: String[] = [];
     
     constructor(
         private router: Router,
@@ -23,18 +23,16 @@ export class NewUserComponent implements OnInit{
     }
     
     register() {
-        if (this.user_emails.indexOf(this.model.email) === -1) {
+        if (this.company_emails.indexOf(this.model.email) === -1) {
             this.loading = true;
-            this.model.company = JSON.parse(localStorage.getItem('currentUser'));
-            this.model.available_tokens = 0;
-            this.adminService.addUser(this.model)
+            this.adminService.addCompany(this.model)
                 .subscribe(
                     data => {
                         this.alertService.success('Successfully added', true);
-                        this.adminService.sendInvitationToUser(data)
+                        this.adminService.sendInvitationToCompany(data)
                         .subscribe(
                             data => {
-                                this.router.navigate(['/admin/manage_user']);
+                                this.router.navigate(['/admin/manage_company']);
                             },
                             error => {
     
@@ -50,12 +48,12 @@ export class NewUserComponent implements OnInit{
     }
     
     getEmails() {
-      this.adminService.getUsers().subscribe(
+      this.adminService.getCompanies().subscribe(
         data => {
             for (let index in data) {
-                this.user_emails.push(data[index].email);
+                this.company_emails.push(data[index].email);
             }
-            console.log(this.user_emails);
+            console.log(this.company_emails);
         },
         error => console.log(error),
         () => {this.loading = false}

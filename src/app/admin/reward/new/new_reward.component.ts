@@ -54,7 +54,9 @@ export class NewRewardComponent implements OnInit{
 
   addReward() {
     this.isLoading = true;
-    this.adminService.addReward(this.addRewardForm.value)
+    let newReward = this.addRewardForm.value
+    newReward.company = JSON.parse(localStorage.getItem('currentUser'));
+    this.adminService.addReward(newReward)
     .subscribe(
         data => {
             this.router.navigate(['/admin/manage_reward']);

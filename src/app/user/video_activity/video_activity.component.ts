@@ -1,18 +1,22 @@
-import { Component, OnInit }        from '@angular/core';
+import { Component, OnInit, ViewChild }        from '@angular/core';
 import { Content }                  from '../../_models/index'
-import { UserService, AdminService }             from '../../_services/index';
+import { UserService, AdminService }  from '../../_services/index';
 import { ActivatedRoute, Router } from '@angular/router';
-
 
 @Component({
     templateUrl: 'video_activity.component.html',
     styleUrls: [ './video_activity.component.scss' ]
 })
 export class VideoActivityComponent implements OnInit{
+  @ViewChild('video') video;
+
   private content;
   private isLoading: boolean = true;
   private user;
   private points_awarded:number = 0;
+  private currTime;
+  private currentTimeRange;
+  private tokens_awarded;
 
   constructor(
     private adminService: AdminService,
@@ -20,6 +24,28 @@ export class VideoActivityComponent implements OnInit{
     private route: ActivatedRoute,
     private router: Router
   ){ }
+
+  playPause(video) {
+    console.log("playpause");
+    if (video.paused) {
+      video.play();
+    }
+    else {
+      video.pause();
+    }
+  }
+
+  updateDisplayTime(video) {
+    this.currTime = this.secondsToMinutesAndSeconds(video.currentTime);
+    this.currentTimeRange = video.currentTime;
+    this.tokens_awarded = Math.round(this.currentTimeRange) * this.content.reward
+  }
+
+  secondsToMinutesAndSeconds(time) {
+      var minutes = Math.floor(time / 60);
+      var seconds = Math.round(time % 60);
+      return "" + minutes + ":" + seconds;
+  }
 
   ngOnInit() {
     this.route.params.subscribe(params => {
@@ -56,8 +82,10 @@ export class VideoActivityComponent implements OnInit{
       user: this.user.first_name+" "+this.user.last_name,
       content: this.content,
       points_awarded: this.points_awarded,
-      date: current_date
+      date: current_date,
     });  
+    this.user.available_tokens += Math.round(this.currentTimeRange) * this.content.reward;
+    console.log(this.currentTimeRange);
     this.adminService.editUser(this.user)
       .subscribe(
           data => {

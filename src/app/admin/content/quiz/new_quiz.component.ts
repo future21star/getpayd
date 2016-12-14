@@ -50,6 +50,7 @@ export class NewQuizComponent implements OnInit{
     content = this.addQuizForm.value;
     content.type = "quiz";
     content.content = this.quizzes[0].question;
+    content.company = JSON.parse(localStorage.getItem('currentUser'));
     content.quizzes = this.quizzes.map(function(quiz){
       let result = {question:"", answers:[], correct_answer:1};
       result.question = quiz.question;

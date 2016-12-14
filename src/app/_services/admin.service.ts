@@ -5,6 +5,7 @@ import { User } from '../_models/index';
 import { Content } from '../_models/index';
 import { Reward } from '../_models/index';
 import { Department } from '../_models/index';
+import { Company } from '../_models/index';
 
 import 'rxjs/add/operator/map';
 
@@ -20,9 +21,20 @@ export class AdminService {
     return this.http.post('/send_invitation_to_user', JSON.stringify(user), this.options);
   }
 
+  sendInvitationToCompany(company) {
+    return this.http.post('/send_invitation_to_company', JSON.stringify(company), this.options);
+  }
+
+  sendEmailRegardingReward(user, reward, number) {
+    let post_params = {user:user, reward: reward, number: number};
+    console.log(post_params);
+    return this.http.post('/send_email_regarding_reward', JSON.stringify(post_params), this.options);
+  }
+
   //User Service
   getUsers() {
-    return this.http.get('/users').map(res => res.json());
+    let current_user = JSON.parse(localStorage.getItem('currentUser'));
+    return this.http.get(`/users/${current_user._id}`).map(res => res.json());
   }
   getUser(user_id) {
     return this.http.get(`/specific_user/${user_id}`).map(res => res.json());
@@ -41,9 +53,28 @@ export class AdminService {
     return this.http.delete(`/user/${user._id}`, this.options);
   }
 
+  //Company Service
+  getCompanies() {
+    return this.http.get('/companies').map(res => res.json());
+  }
+  getCompany(company_id) {
+    return this.http.get(`/specific_company/${company_id}`).map(res => res.json());
+  }
+  addCompany(company: Company) {
+    company.date_joined =  Date.now();
+    return this.http.post("/company", JSON.stringify(company), this.options);
+  }
+  editCompany(company: Company) {
+    return this.http.put(`/company/${company._id}`, JSON.stringify(company), this.options);
+  }
+  deleteCompany(company: Company) {
+    return this.http.delete(`/company/${company._id}`, this.options);
+  }
+
   //Content Service
   getContents() {
-    return this.http.get('/contents').map(res => res.json());
+    let current_user = JSON.parse(localStorage.getItem('currentUser'));
+    return this.http.get(`/contents/${current_user._id}`).map(res => res.json());
   }
   getContent(content_id) {
     return this.http.get(`/content/${content_id}`).map(res => res.json());
@@ -71,16 +102,17 @@ export class AdminService {
 
   //Reward Service
   getRewards() {
-    return this.http.get('/rewards').map(res => res.json());
+    let current_user = JSON.parse(localStorage.getItem('currentUser'));
+    return this.http.get(`/rewards/${current_user._id}`).map(res => res.json());
   }
   getAvailableRewards(department_v,department_id, department_name) {
-    return this.http.get(`/get_available_rewards/${department_v}/${department_id}/${department_name}`).map(res => res.json());
+    let current_user = JSON.parse(localStorage.getItem('currentUser'));
+    return this.http.get(`/get_available_rewards/${current_user.company._id}/${department_v}/${department_id}/${department_name}`).map(res => res.json());
   }
   getReward(reward_id) {
     return this.http.get(`/reward/${reward_id}`).map(res => res.json());
   }
   addReward(reward) {
-    console.log("reward", reward);
     return this.http.post("/reward", JSON.stringify(reward), this.options);
   }
   editReward(reward) {
